@@ -23,6 +23,7 @@ public class TaskManager : MonoBehaviour {
 	public Transform CubeObject;
 	public GameObject Actor;
 	public PlayerControlller playerController;
+	public GameObject CameraRotator;
 
 	// Use this for initialization
 	void Start () {
@@ -59,6 +60,13 @@ public class TaskManager : MonoBehaviour {
 								Attack ();
 								animating = true;
 						}
+
+						if (Input.GetKeyDown (KeyCode.Alpha6)) {
+								TaskRotateCamera ();
+								animating = true;
+						}
+
+
 				}
 	
 	}
@@ -102,6 +110,34 @@ public class TaskManager : MonoBehaviour {
 		_camera.orthographic = false;
 		RenderSettings.skybox = skybox;
 		Actor.SetActive(true);
+	}
+
+	public void TaskRotateCamera()
+	{
+		ClearSequence();
+
+		foreach (GameObject o in GameObject3DList) 
+		{
+			o.SetActive(true);
+		}
+		
+		_camera.orthographic = false;
+		RenderSettings.skybox = skybox;
+		Actor.SetActive(true);
+
+
+		sequence = new Sequence();
+		sequence.Insert(Delay,HOTween.To(CameraRotator.transform, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(45, 0, 0),false)));
+		sequence.Insert(Delay*2+RotationTime*2,HOTween.To(CameraRotator.transform, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(0, 0, 0),false)));
+		sequence.Insert(Delay*3+RotationTime*4,HOTween.To(CameraRotator.transform, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(0, 90, 0),false)));
+		sequence.Insert(Delay*4+RotationTime*6,HOTween.To(CameraRotator.transform, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(0, -90, 0),false)));
+		sequence.Insert(Delay*5+RotationTime*8,HOTween.To(CameraRotator.transform, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(0, 0, 0),false).OnStepComplete(Done)));
+
+		//sequence.Insert(RotationTime+Delay*2,HOTween.To(CubeObject, RotationTime*2, new TweenParms().Prop("rotation", new Vector3(0, 0, -RotationAngleZ),false)));
+		//sequence.Insert(RotationTime*3+Delay*3,HOTween.To(CubeObject, RotationTime, new TweenParms().Prop("rotation", new Vector3(0, 0, 0),false).OnStepComplete(Done)));
+		
+		sequence.Play ();
+
 	}
 
 	public void TaskRotationZ()
